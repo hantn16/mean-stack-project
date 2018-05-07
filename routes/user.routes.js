@@ -3,11 +3,12 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const User = require('../models/user');
 const _ = require('lodash');
-const authenticate = require('../middleware/authenticate');
+const {authenticate} = require('../middleware/authenticate');
+
+router.use(authenticate);
 
 //POST /users
-
-router.post('/users', (req, res) => {
+router.post('/', (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
     const newUser = new User(body);
     newUser.save().then(() => {
@@ -20,7 +21,7 @@ router.post('/users', (req, res) => {
 });
 
 //POST /users/login
-router.post('/users/login',(req,res) => {
+router.post('/login',(req,res) => {
     const body = _.pick(req.body,['email','password']);
     User.findByCredentials(body.email,body.password).then((user) => {
         user.generateAuthToken().then((token) => {
@@ -32,18 +33,27 @@ router.post('/users/login',(req,res) => {
 
 });
 
-//DELETE /users/me/token
-router.delete('/users/me/token',authenticate,(req,res) => {
+// DELETE /users/me/token
+router.delete('/me/token',authenticate,(req,res) => {
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
-    },() => {
-        res.status(400).send();
+    },(err) => {
+        res.status(400).send(err);
     });
 });
 
 //GET /users/me
-router.get('/users/me',authenticate,(req,res) => {
+router.get('/me',authenticate,(req,res) => {
     res.send(req.user);
+});
+
+//GET /users
+router.get('/getall',(req,res,next) => {
+    User.find().then((users) => {
+        res.send({ users });
+    }, (err) => {
+        res.status(400).send(err);
+    });
 });
 
 module.exports = router;

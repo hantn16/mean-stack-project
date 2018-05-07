@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('../db/mongoose');
 const bodyParser = require('body-parser');
 const Customer = require('../models/customer');
 const _ = require('lodash');

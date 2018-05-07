@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 const connection = process.env.MONGO_URL || 'mongodb://localhost:27017/SaleReportApp';
-
 mongoose.Promise = global.Promise;
 mongoose.connect(connection,(e) =>{
     if (e) {
