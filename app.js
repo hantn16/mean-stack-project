@@ -4,8 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var {mongoose} = require('./db/mongoose');
-var {authenticate} = require('../middleware/authenticate');
+var mongoose = require('./db/mongoose');
+// var {authenticate} = require('../middleware/authenticate');
 
 var appRoutes = require('./routes/app.routes');
 var userRoutes = require('./routes/user.routes');
@@ -28,7 +28,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(authenticate);
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -36,13 +35,20 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PATCH, DELETE, OPTIONS');
     next();
 });
-
-app.use('/', appRoutes);
+// const connection = process.env.MONGO_URL || 'mongodb://localhost:27017/SaleReportApp';
+// mongoose.Promise = global.Promise;
+// mongoose.connect(connection,(e) =>{
+//     if (e) {
+//         console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
+//         throw e;
+//       }
+// });
 app.use('/users', userRoutes);
 app.use('/sellers', sellerRoutes);
 app.use('/customer', customerRoutes);
 app.use('/contract', contractRoutes);
 app.use('/apartment', apartmentRoutes);
+app.use('/', appRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

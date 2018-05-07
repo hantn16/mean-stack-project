@@ -4,7 +4,7 @@ const mongoose = require('../db/mongoose');
 const bodyParser = require('body-parser');
 const Apartment = require('../models/apartment');
 const _ = require('lodash');
-const authenticate = require('../middleware/authenticate');
+const {authenticate} = require('../middleware/authenticate');
 
 //POST /apartments
 

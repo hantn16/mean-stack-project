@@ -8,4 +8,4 @@ mongoose.connect(connection,(e) =>{
       }
 });
 
-module.exports = {mongoose};
+module.exports = mongoose;

@@ -4,7 +4,7 @@ const mongoose = require('../db/mongoose');
 const bodyParser = require('body-parser');
 const Seller = require('../models/seller');
 const _ = require('lodash');
-const authenticate = require('../middleware/authenticate');
+const {authenticate} = require('../middleware/authenticate');
 
 //POST /sellers
 
@@ -20,7 +20,7 @@ router.post('/sellers', authenticate, (req, res) => {
 });
 
 //GET /sellers
-app.get('/sellers',authenticate, (req, res) => {
+router.get('/sellers', (req, res) => {
     Seller.find().then((sellers) => {
         res.send({ sellers });
     }, (err) => {
@@ -29,7 +29,7 @@ app.get('/sellers',authenticate, (req, res) => {
 });
 
 //GET /sellers/12323434
-app.get('/sellers/:id',authenticate, (req, res) => {
+router.get('/sellers/:id',authenticate, (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -47,7 +47,7 @@ app.get('/sellers/:id',authenticate, (req, res) => {
 });
 
 //DELETE /sellers/:id
-app.delete('/sellers/:id',authenticate, (req, res) => {
+router.delete('/sellers/:id',authenticate, (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -66,7 +66,7 @@ app.delete('/sellers/:id',authenticate, (req, res) => {
 });
 
 //PATCH /sellers/:id
-app.patch(`/sellers/:id`,authenticate, (req, res) => {
+router.patch(`/sellers/:id`,authenticate, (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['name', 'taxCode', 'address']);
     if (!ObjectID.isValid(id)) {
