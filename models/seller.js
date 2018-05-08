@@ -8,7 +8,8 @@ const SellerSchema = new mongoose.Schema({
     },
     taxCode: {
         type: String,
-        minlength: 10
+        minlength: 10,
+        unique: true
     },
     address: {
         type: String

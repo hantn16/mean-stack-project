@@ -6,6 +6,7 @@ mongoose.connect(connection,(e) =>{
         console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
         throw e;
       }
+    console.log('Connect successfully!!!');
 });
 
 module.exports = mongoose;

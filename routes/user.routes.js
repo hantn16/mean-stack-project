@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const User = require('../models/user');
+const {User} = require('../models/user');
 const _ = require('lodash');
 const {authenticate} = require('../middleware/authenticate');
-
-router.use(authenticate);
 
 //POST /users
 router.post('/', (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
+    console.log(body);
     const newUser = new User(body);
     newUser.save().then(() => {
         return newUser.generateAuthToken();

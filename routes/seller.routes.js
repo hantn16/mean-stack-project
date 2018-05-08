@@ -8,19 +8,19 @@ const {authenticate} = require('../middleware/authenticate');
 
 //POST /sellers
 
-router.post('/sellers', authenticate, (req, res) => {
+router.post('/',authenticate, (req, res) => {
     const body = _.pick(req.body, ['name', 'taxCode', 'address']);
     body._creator = req.user._id;
     const newSeller = new Seller(body);
     newSeller.save().then((seller) => {
-        res.send(seller);
+        res.send(seller).send(req);
     }, (err) => {
         res.status(400).send(err);
     })
 });
 
 //GET /sellers
-router.get('/sellers', (req, res) => {
+router.get('/getall', (req, res) => {
     Seller.find().then((sellers) => {
         res.send({ sellers });
     }, (err) => {
@@ -29,7 +29,7 @@ router.get('/sellers', (req, res) => {
 });
 
 //GET /sellers/12323434
-router.get('/sellers/:id',authenticate, (req, res) => {
+router.get('/:id',authenticate, (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -47,7 +47,7 @@ router.get('/sellers/:id',authenticate, (req, res) => {
 });
 
 //DELETE /sellers/:id
-router.delete('/sellers/:id',authenticate, (req, res) => {
+router.delete('/:id',authenticate, (req, res) => {
     const id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -66,7 +66,7 @@ router.delete('/sellers/:id',authenticate, (req, res) => {
 });
 
 //PATCH /sellers/:id
-router.patch(`/sellers/:id`,authenticate, (req, res) => {
+router.patch(`/:id`,authenticate, (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['name', 'taxCode', 'address']);
     if (!ObjectID.isValid(id)) {
