@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('../db/mongoose');
 const bodyParser = require('body-parser');
+const { ObjectID } = require('mongodb');
 const Seller = require('../models/seller');
 const _ = require('lodash');
 const {authenticate} = require('../middleware/authenticate');
@@ -10,17 +11,19 @@ const {authenticate} = require('../middleware/authenticate');
 
 router.post('/',authenticate, (req, res) => {
     const body = _.pick(req.body, ['name', 'taxCode', 'address']);
-    body._creator = req.user._id;
+    body._createdBy = req.user._id;
+    body._createdAt = new Date();
+    console.log(body._creator);
     const newSeller = new Seller(body);
     newSeller.save().then((seller) => {
-        res.send(seller).send(req);
+        res.send(seller);
     }, (err) => {
         res.status(400).send(err);
     })
 });
 
 //GET /sellers
-router.get('/getall', (req, res) => {
+router.get('/getall',authenticate, (req, res) => {
     Seller.find().then((sellers) => {
         res.send({ sellers });
     }, (err) => {
@@ -69,26 +72,22 @@ router.delete('/:id',authenticate, (req, res) => {
 router.patch(`/:id`,authenticate, (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['name', 'taxCode', 'address']);
+    body._modifiedBy = req.user._id;
+    body._modifiedAt = new Date();
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
-    // if (_.isBoolean(body.completed) && body.completed) {
-    //     body.completedAt = new Date().getTime();
-    // } else {
-    //     body.completed = false;
-    //     body.completedAt = null;
-    // }
     Seller.findOneAndUpdate({
         _id: id
     }, {
         $set: body
     }, { new: true }).then((seller) => {
         if (!seller) {
-            res.status(404).send();
+            res.status(404).send(e);
         }
         res.send({ seller });
     }).catch((e) => {
-        res.status(400).send()
+        res.status(400).send(e)
     });
 });
 module.exports = router;

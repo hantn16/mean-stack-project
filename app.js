@@ -44,9 +44,9 @@ app.use(function (req, res, next) {
 // });
 app.use('/users', userRoutes);
 app.use('/sellers', sellerRoutes);
-app.use('/customer', customerRoutes);
-app.use('/contract', contractRoutes);
-app.use('/apartment', apartmentRoutes);
+app.use('/customers', customerRoutes);
+app.use('/contracts', contractRoutes);
+app.use('/apartments', apartmentRoutes);
 app.use('/', appRoutes);
 
 // catch 404 and forward to error handler

@@ -13,6 +13,22 @@ const SellerSchema = new mongoose.Schema({
     },
     address: {
         type: String
+    },
+    _createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    _createdAt: {
+        type: mongoose.Schema.Types.Date,
+        required: true
+    },
+    _modifiedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    },
+    _modifiedAt: {
+        type: mongoose.Schema.Types.Date,
+        default: null
     }
 });
 

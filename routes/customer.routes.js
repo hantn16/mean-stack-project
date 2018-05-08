@@ -2,49 +2,91 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('../db/mongoose');
 const bodyParser = require('body-parser');
+const { ObjectID } = require('mongodb');
 const Customer = require('../models/customer');
 const _ = require('lodash');
 const {authenticate} = require('../middleware/authenticate');
 
 //POST /customers
 
-router.post('/customers', (req, res) => {
-    const body = _.pick(req.body, ['email', 'password']);
+router.post('/',authenticate, (req, res) => {
+    const body = _.pick(req.body, ['name', 'idNo', 'dateOfIssue','placeOfIssue','phoneNumber','email']);
+    body._createdBy = req.user._id;
+    body._createdAt = new Date();
     const newCustomer = new Customer(body);
-    newCustomer.save().then(() => {
-        return newCustomer.generateAuthToken();
-    }).then((token) => {
-        res.header('x-auth',token).send(newCustomer);
-    }).catch((err) => {
+    newCustomer.save().then((customer) => {
+        res.status(201).send(customer);
+    }, (err) => {
         res.status(400).send(err);
     })
 });
 
-//POST /customers/login
-router.post('/customers/login',(req,res) => {
-    const body = _.pick(req.body,['email','password']);
-    Customer.findByCredentials(body.email,body.password).then((customer) => {
-        customer.generateAuthToken().then((token) => {
-            res.header('x-auth',token).send(customer);
-        });
+//GET /customers
+router.get('/',authenticate, (req, res) => {
+    Customer.find().then((customers) => {
+        res.send({ customers });
+    }, (err) => {
+        res.status(400).send(err);
+    });
+});
+
+//GET /customers/12323434
+router.get('/:id',authenticate, (req, res) => {
+    const id = req.params.id;
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    Customer.findOne({
+        _id: id
+    }).then((customer) => {
+        if (!customer) {
+            return res.status(404).send();
+        }
+        return res.status(200).send({ customer });
+    }, (err) => {
+        return res.status(404).send();
+    });
+});
+
+//DELETE /customers/:id
+router.delete('/:id',authenticate, (req, res) => {
+    const id = req.params.id;
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+        // throw new Error('id is not valid');
+    }
+    Customer.findOneAndRemove({
+        _id: id
+    }).then((customer) => {
+        if (!customer) {
+            return res.status(404).send();
+        }
+        return res.status(200).send({ customer });
+    }, (err) => {
+        return res.status(400).send(err);
+    });
+});
+
+//PATCH /customers/:id
+router.patch(`/:id`,authenticate, (req, res) => {
+    const id = req.params.id;
+    const body = _.pick(req.body, ['name', 'idNo', 'dateOfIssue','placeOfIssue','phoneNumber','email']);
+    body._modifiedBy = req.user._id;
+    body._modifiedAt = new Date();
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    Customer.findOneAndUpdate({
+        _id: id
+    }, {
+        $set: body
+    }, { new: true }).then((customer) => {
+        if (!customer) {
+            res.status(404).send(e);
+        }
+        res.send({ customer });
     }).catch((e) => {
-        res.status(400).send(e);
-    });
-
-});
-
-//DELETE /customers/me/token
-router.delete('/customers/me/token',authenticate,(req,res) => {
-    req.customer.removeToken(req.token).then(() => {
-        res.status(200).send();
-    },() => {
-        res.status(400).send();
+        res.status(400).send(e)
     });
 });
-
-//GET /customers/me
-router.get('/customers/me',authenticate,(req,res) => {
-    res.send(req.customer);
-});
-
 module.exports = router;
