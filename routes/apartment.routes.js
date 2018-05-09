@@ -10,9 +10,9 @@ const {authenticate} = require('../middleware/authenticate');
 //POST /apartments
 
 router.post('/',authenticate, (req, res) => {
-    const body = _.pick(req.body, ['code', 'description', 'buildupArea','carpetArea','status']);
+    const body = _.pick(req.body, ['code', 'description', 'buildupArea','carpetArea','expectedPrice','status']);
     body._createdBy = req.user._id;
-    body._createdAt = new Date();
+    // body._createdAt = new Date();
     const newApartment = new Apartment(body);
     newApartment.save().then((apartment) => {
         res.status(201).send(apartment);

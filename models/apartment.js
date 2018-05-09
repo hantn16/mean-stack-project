@@ -13,26 +13,25 @@ const ApartmentSchema = new mongoose.Schema({
   buildupArea: {
     type: Number
   },
+  expectedPrice: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   status: {
     type: Number,
     default: -1
   },
   _createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-  },
-  _createdAt: {
-      type: mongoose.Schema.Types.Date,
-      required: true
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
   _modifiedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null
-  },
-  _modifiedAt: {
-      type: mongoose.Schema.Types.Date,
-      default: null
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
   }
-});
+}, {
+    timestamps: { createdAt: '_createdAt', updatedAt: '_modifiedAt' }
+  });
 
 module.exports = mongoose.model('Apartment', ApartmentSchema);
