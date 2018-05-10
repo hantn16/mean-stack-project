@@ -70,9 +70,8 @@ router.delete('/:id',authenticate, (req, res) => {
 //PATCH /apartments/:id
 router.patch(`/:id`,authenticate, (req, res) => {
     const id = req.params.id;
-    const body = _.pick(req.body, ['name', 'idNo', 'dateOfIssue','placeOfIssue','phoneNumber','email']);
+    const body = _.pick(req.body, ['code', 'description', 'expectedPrice','status','buildupArea','carpetArea','_createdBy']);
     body._modifiedBy = req.user._id;
-    body._modifiedAt = new Date();
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
